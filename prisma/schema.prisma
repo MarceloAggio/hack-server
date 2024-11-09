@@ -7,11 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id          String           @id @default(uuid())
+  email       String           @unique
+  password    String
+  cpf         String
+  status      String
+  name        String
+  phoneNumber String?
+  registeredAt DateTime        @default(now())
+  
+  financialProfiles FinancialProfile[]
+  actionPlans       ActionPlan[]
 
-model User { 
-  id String @id @unique
-  email String @unique
-  password String
-  cpf String
-  status String
+  @@map("users")
+}
+
+model FinancialProfile {
+  id            String   @id @default(uuid())
+  userId        String
+  income        Float
+  expenses      Float
+  debts         Json
+  financialGoals String?
+  createdAt     DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("financial_profiles")
+}
+
+model ActionPlan {
+  id                      String   @id @default(uuid())
+  userId                  String
+  priorityList            Json     // Lista de dívidas organizadas por prioridade.
+  monthlyPaymentSuggestions Json   // Sugestões de valores mensais a pagar.
+  estimatedPayoffTime     String   // Tempo estimado para quitação.
+  negotiationTips         Json     // Recomendações de negociação de dívidas.
+  monthlyBudget           Json     // Orçamento para despesas essenciais e variáveis.
+  suggestedReserveAmount  Float    // Montante sugerido para reservas.
+  financialHealthAnalysis Json     // Análise da saúde financeira atual.
+  progressTracking        Json     // Progresso em relação ao plano.
+  alerts                  Json     // Alertas de dívidas e outras notificações.
+  savingGoals             Json     // Objetivo de economia mensal.
+  additionalTips          Json     // Recomendações de ajustes e dicas de renda.
+  investmentSuggestions   Json?    // Sugestões de investimento (opcional).
+  periodicUpdates         Json     // Resumo das ações concluídas e ajustes necessários.
+  createdAt               DateTime @default(now())
+  
+  user                    User     @relation(fields: [userId], references: [id])
+
+  @@map("action_plans")
 }
