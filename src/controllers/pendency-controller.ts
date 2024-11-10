@@ -40,7 +40,7 @@ const slips = [
     { id: 6, pendingItemId: 4, name: 'Boleto 1 - Empréstimo Pessoal', amount: 333, dueDate: '2024-11-25' }
 ];
 
-router.get('/user/pendency/slips/:id', authenticateJWT, (req: Request, res: Response) => {
+router.get('/user/pendency/:id/slips', authenticateJWT, (req: Request, res: Response) => {
     const pendingItemId = parseInt(req.params.id, 10);
 
     if (isNaN(pendingItemId)) {

@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id          String           @id @default(uuid())
-  email       String           @unique
-  password    String
-  cpf         String
-  status      String
-  name        String
-  phoneNumber String?
-  registeredAt DateTime        @default(now())
+  id              String            @id @default(uuid())
+  email           String            @unique
+  password        String
+  cpf             String
+  status          String
+  name            String
+  fixedIncome     Float
+  phoneNumber     String?
+  registeredAt    DateTime          @default(now())
   
   financialProfiles FinancialProfile[]
   actionPlans       ActionPlan[]
+  entries           Entry[]
+  monthlyIncomes    MonthlyIncome[]
 
   @@map("users")
 }
@@ -29,7 +32,6 @@ model FinancialProfile {
   income        Float
   expenses      Float
   debts         Json
-  financialGoals String?
   createdAt     DateTime @default(now())
   
   user          User     @relation(fields: [userId], references: [id])
@@ -45,17 +47,53 @@ model ActionPlan {
   estimatedPayoffTime     String   // Tempo estimado para quitação.
   negotiationTips         Json     // Recomendações de negociação de dívidas.
   monthlyBudget           Json     // Orçamento para despesas essenciais e variáveis.
-  suggestedReserveAmount  Float    // Montante sugerido para reservas.
-  financialHealthAnalysis Json     // Análise da saúde financeira atual.
-  progressTracking        Json     // Progresso em relação ao plano.
   alerts                  Json     // Alertas de dívidas e outras notificações.
-  savingGoals             Json     // Objetivo de economia mensal.
   additionalTips          Json     // Recomendações de ajustes e dicas de renda.
-  investmentSuggestions   Json?    // Sugestões de investimento (opcional).
-  periodicUpdates         Json     // Resumo das ações concluídas e ajustes necessários.
-  createdAt               DateTime @default(now())
+  createdAt               DateTime? @default(now())
   
   user                    User     @relation(fields: [userId], references: [id])
 
   @@map("action_plans")
+}
+
+enum EntryCategory {
+  ALIMENTACAO
+  TRANSPORTE
+  LAZER
+  SAUDE
+  EDUCACAO
+  INVESTIMENTO
+  OUTROS
+}
+
+model Entry {
+  id          String       @id @default(uuid())
+  userId      String
+  type        EntryType
+  title       String
+  amount      Float
+  category    EntryCategory
+  createdAt   DateTime     @default(now())
+
+  user        User         @relation(fields: [userId], references: [id])
+
+  @@map("entries")
+}
+
+
+model MonthlyIncome {
+  id          String    @id @default(uuid())
+  userId      String
+  month       DateTime
+  totalIncome Float
+  createdAt   DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("monthly_incomes")
+}
+
+enum EntryType {
+  GANHO
+  DESPESA
 }
