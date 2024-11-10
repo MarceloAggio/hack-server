@@ -9,7 +9,7 @@ const router = express.Router();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register-user', async (req: Request, res: Response) => {
     const { email, password, name, cpf, phoneNumber , fixedIncome} = req.body;
 
     if (!email || !password || !name || !cpf || !phoneNumber) {
